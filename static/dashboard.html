@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lançamento individual de notas - iScholar">
+    <title>Lançar Nota - API Reação</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                Professor ID: <span class="badge" id="professor-badge">--</span>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Formulário de nota individual -->
+        <div class="card">
+            <h2>📝 Lançar Nota Individual</h2>
+            <p class="subtitle">Preencha os dados para lançar uma nota</p>
+
+            <form onsubmit="enviarNota(event)">
+                <div class="form-group">
+                    <label for="id-matricula">ID Matrícula</label>
+                    <input type="number" id="id-matricula" placeholder="Ex: 12345" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id-disciplina">ID Disciplina</label>
+                    <input type="number" id="id-disciplina" placeholder="Ex: 67890" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id-avaliacao">ID Avaliação</label>
+                    <input type="number" id="id-avaliacao" placeholder="Ex: 111" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">Nota (0 a 10)</label>
+                    <input type="text" id="valor" placeholder="Ex: 8.5 ou 8,5" required>
+                </div>
+
+                <button type="submit" id="btn-nota" class="btn btn-primary">Enviar Nota</button>
+            </form>
+
+            <div id="nota-status" class="status"></div>
+
+            <a href="/lote.html" class="nav-link">📄 Lançar notas em lote (Excel) →</a>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>initDashboard();</script>
+</body>
+</html>

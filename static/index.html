@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Lançamento de Notas iScholar - Login">
+    <title>Login - API Reação</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🎓 API Reação</h1>
+            <p class="subtitle">Sistema de Lançamento de Notas - iScholar</p>
+
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="professor-id">ID do Professor</label>
+                    <input type="text" id="professor-id" placeholder="Ex: 65" autocomplete="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" placeholder="Sua senha" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" id="btn-login" class="btn btn-primary">Entrar</button>
+            </form>
+
+            <div id="login-status" class="status"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Se já estiver logado, redireciona
+        checkAuth().then(data => {
+            if (data.logged_in) window.location.href = '/lote.html';
+        });
+    </script>
+</body>
+
+</html>

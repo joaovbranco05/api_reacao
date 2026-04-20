@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Variáveis de ambiente (segredos)
+.env
+env
+
+# Build / distribuição PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Reflex (legado)
+.states/
+.web/
+
+# Arquivos temporários / uploads
+uploaded_files/
+
+# Arquivos de sistema
+*.rar
+*.zip
+Thumbs.db
+.DS_Store
+
+# Arquivos de texto com credenciais
+texto env*.txt

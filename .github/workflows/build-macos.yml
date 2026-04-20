@@ -1,0 +1,37 @@
+name: Build macOS Executable
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Permite rodar o workflow manualmente pela aba "Actions"
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller app.spec --clean --noconfirm
+
+      - name: Upload macOS Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: API_Reacao-macOS
+          path: dist/API_Reacao
+          retention-days: 7

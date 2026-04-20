@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lançamento de notas em lote via Excel - iScholar">
+    <title>Lote Excel - API Reação</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container wide">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                Professor ID: <span class="badge" id="professor-badge">--</span>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Upload Excel -->
+        <div class="card">
+            <h2>📄 Lançar Notas em Lote</h2>
+            <p class="subtitle">Envie uma planilha Excel (.xlsx) com as notas</p>
+
+            <form onsubmit="enviarLote(event)">
+                <div class="upload-area" id="upload-area">
+                    <input type="file" id="excel-file" accept=".xlsx">
+                    <div class="icon">📁</div>
+                    <div class="title">Arraste o arquivo Excel aqui ou clique para selecionar</div>
+                    <div class="hint">
+                        Formato: .xlsx com colunas:<br>
+                        nome do aluno, nome da turma, nome do professor,<br>
+                        nome da materia, nome da avaliacao, nota
+                    </div>
+                </div>
+                <div class="file-name" id="file-name"></div>
+
+                <button type="submit" id="btn-lote" class="btn btn-primary">Enviar Planilha</button>
+            </form>
+
+            <div id="lote-status" class="status"></div>
+
+            <!-- Resultados -->
+            <div id="results-section" class="results-section">
+                <div id="results-summary" class="results-summary"></div>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Linha</th>
+                            <th>Status</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>initLote();</script>
+</body>
+</html>
