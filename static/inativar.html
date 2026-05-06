@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inativação de Matrículas em Lote via API EAD - API Reação">
+    <title>Inativar Matrículas em Lote - API Reação</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* ── Estilos específicos desta página ── */
+        .tab-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ccc;
+            padding: 0.45rem 1.1rem;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #e74c3c;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .inativar-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .warning-box {
+            background: rgba(231, 76, 60, 0.12);
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1.2rem;
+            color: #f39c9c;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        .warning-box strong {
+            color: #e74c3c;
+        }
+
+        .info-box {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1.2rem;
+            color: #aad4f5;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .info-box code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #7ec8f5;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #e74c3c;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            display: none;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: linear-gradient(135deg, #1e8449, #196f3d);
+            transform: translateY(-1px);
+        }
+
+        .btn-download.visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .progress-bar-wrap {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            height: 6px;
+            overflow: hidden;
+            margin: 0.6rem 0;
+            display: none;
+        }
+
+        .progress-bar-wrap.visible {
+            display: block;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .status-badge.inativado {
+            background: rgba(231, 76, 60, 0.18);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.35);
+        }
+
+        .summary-badge.inativado {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+
+        .col-matricula {
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #aaa;
+        }
+
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-overlay.visible {
+            display: flex;
+        }
+
+        .confirm-box {
+            background: #1a1a2e;
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            border-radius: 14px;
+            padding: 2rem;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .confirm-box h3 {
+            color: #e74c3c;
+            margin-bottom: 0.7rem;
+        }
+
+        .confirm-box p {
+            color: #ccc;
+            margin-bottom: 1.4rem;
+            font-size: 0.92rem;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+
+        .btn-cancel-modal {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel-modal:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container wide">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                Professor ID: <span class="badge" id="professor-badge">--</span>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Navegação entre abas -->
+        <div class="tab-nav">
+            <a href="/lote.html" class="tab-btn">📄 Lançar Notas em Lote</a>
+            <span class="tab-btn active">🚫 Inativar Matrículas</span>
+        </div>
+
+        <!-- Card principal -->
+        <div class="card">
+            <div class="inativar-icon">🚫</div>
+            <h2>Inativação de Matrículas em Lote</h2>
+            <p class="subtitle">Inativa automaticamente matrículas via API EAD WebService</p>
+
+            <!-- Aviso de ação irreversível -->
+            <div class="warning-box">
+                <strong>⚠️ Atenção:</strong> Esta operação é <strong>irreversível</strong>.
+                Após a inativação, as matrículas precisarão ser reativadas manualmente
+                no portal EAD. Verifique a planilha antes de confirmar.
+            </div>
+
+            <!-- Instruções de formato -->
+            <div class="info-box">
+                📋 <strong>Formato da planilha:</strong> arquivo <code>.xlsx</code> com pelo menos 2 colunas:<br>
+                &nbsp;&nbsp;• <code>Nome do Aluno</code> — nome completo do aluno<br>
+                &nbsp;&nbsp;• <code>Nome do Curso</code> — nome exato (ou aproximado) do curso<br>
+                A primeira linha deve ser o cabeçalho. Linhas vazias são ignoradas.
+            </div>
+
+            <!-- Upload -->
+            <form id="form-inativar" onsubmit="confirmarInativacao(event)">
+                <div class="upload-area" id="upload-area-inativar">
+                    <input type="file" id="excel-inativar" accept=".xlsx">
+                    <div class="icon">📁</div>
+                    <div class="title">Arraste o arquivo Excel aqui ou clique para selecionar</div>
+                    <div class="hint">Formato: .xlsx com colunas <strong>Nome do Aluno</strong> e <strong>Nome do
+                            Curso</strong></div>
+                </div>
+                <div class="file-name" id="file-name-inativar"></div>
+
+                <button type="submit" id="btn-inativar" class="btn btn-primary btn-danger">
+                    🚫 Iniciar Inativação em Lote
+                </button>
+            </form>
+
+            <!-- Barra de progresso -->
+            <div class="progress-bar-wrap" id="progress-wrap">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+
+            <div id="inativar-status" class="status"></div>
+
+            <!-- Botão de download do relatório -->
+            <button class="btn-download" id="btn-download" onclick="downloadRelatorio()">
+                ⬇️ Baixar Relatório (.xlsx)
+            </button>
+
+            <!-- Tabela de resultados -->
+            <div id="results-section-inativar" class="results-section">
+                <div id="results-summary-inativar" class="results-summary"></div>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome do Aluno</th>
+                            <th>Nome do Curso</th>
+                            <th>MatriculaID</th>
+                            <th>Status</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body-inativar"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div class="confirm-overlay" id="confirm-overlay">
+        <div class="confirm-box">
+            <h3>⚠️ Confirmar Inativação</h3>
+            <p id="confirm-msg">Tem certeza que deseja inativar as matrículas da planilha?<br>
+                Esta ação <strong>não pode ser desfeita automaticamente</strong>.</p>
+            <div class="confirm-actions">
+                <button class="btn-cancel-modal" onclick="cancelarConfirmacao()">Cancelar</button>
+                <button class="btn btn-primary btn-danger" onclick="executarInativacao()"
+                    style="margin:0; padding:0.6rem 1.4rem;">
+                    Confirmar Inativação
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/inativar.js"></script>
+    <script>initInativar();</script>
+</body>
+
+</html>

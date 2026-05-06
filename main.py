@@ -44,9 +44,11 @@ app = FastAPI(title="API Reação - iScholar")
 # Register API routers
 from api.auth import router as auth_router
 from api.notas import router as notas_router
+from api.inativar import router as inativar_router
 
 app.include_router(auth_router)
 app.include_router(notas_router)
+app.include_router(inativar_router)
 
 # Serve static files
 static_dir = BASE_DIR / "static"
@@ -66,6 +68,11 @@ async def dashboard():
 @app.get("/lote.html")
 async def lote():
     return FileResponse(str(static_dir / "lote.html"))
+
+
+@app.get("/inativar.html")
+async def inativar():
+    return FileResponse(str(static_dir / "inativar.html"))
 
 
 def open_browser():
