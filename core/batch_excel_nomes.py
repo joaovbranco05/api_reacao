@@ -21,6 +21,7 @@ class GradeRowNamed:
     materia_nome: str
     avaliacao_nome: str
     nota: str 
+    status_matricula: str = ""
 
 def _cell_str(v: Any) -> str:
     return "" if v is None else str(v).strip()
@@ -36,6 +37,12 @@ def parse_excel_bytes_named(xlsx_bytes: bytes) -> list[GradeRowNamed]:
     if missing:
         raise ValueError(f"Colunas faltando no Excel: {missing}")
 
+    status_col = None
+    for c in ["status", "status matricula", "status da matricula", "estado", "estado da matricula"]:
+        if c in col_map:
+            status_col = c
+            break
+
     rows: list[GradeRowNamed] = []
     for row_idx, row in enumerate(ws.iter_rows(min_row=2), start=2):
         if all(_cell_str(cell.value) == "" for cell in row):
@@ -47,6 +54,7 @@ def parse_excel_bytes_named(xlsx_bytes: bytes) -> list[GradeRowNamed]:
         mat   = _cell_str(row[col_map["nome da materia"]].value)
         ava   = _cell_str(row[col_map["nome da avaliacao"]].value)
         nota  = _cell_str(row[col_map["nota"]].value)
+        status = _cell_str(row[col_map[status_col]].value) if status_col else ""
 
         if not aluno or not turma or not prof or not mat or not ava or nota == "":
             raise ValueError(f"Linha {row_idx}: existe campo vazio.")
@@ -59,6 +67,7 @@ def parse_excel_bytes_named(xlsx_bytes: bytes) -> list[GradeRowNamed]:
                 materia_nome=mat,
                 avaliacao_nome=ava,
                 nota=nota,
+                status_matricula=status,
             )
         )
 

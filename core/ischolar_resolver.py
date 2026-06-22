@@ -42,7 +42,7 @@ class IScholarResolver:
         data = self._get(url, params={"unidade": self.unidade})
         self._cache_matriculas = data.get("dados", [])
 
-    def resolve_matricula_e_turma(self, aluno_nome: str, turma_nome: str) -> tuple[int, int]:
+    def resolve_matricula_e_turma(self, aluno_nome: str, turma_nome: str, status_desejado: str = "") -> tuple[int, int]:
         self._load_matriculas()
         mats = self._cache_matriculas or []
 
@@ -55,7 +55,30 @@ class IScholarResolver:
             raise ValueError(f"Aluno não encontrado (unidade={self.unidade}): {aluno_nome}")
 
         cand = aluno_map[aluno_key]
-        turma_map = {norm(c.get("turma","")): c for c in cand}
+
+        if status_desejado:
+            status_norm = norm(status_desejado)
+            if status_norm == "cursando":
+                cand_filtered = [c for c in cand if c.get("status_saida", "") == ""]
+            elif status_norm == "remanejado":
+                cand_filtered = [c for c in cand if c.get("status_saida", "") == "REMANEJADO"]
+            else:
+                cand_filtered = [c for c in cand if norm(c.get("status_saida", "")) == status_norm]
+            
+            if cand_filtered:
+                cand = cand_filtered
+
+        turma_map = {}
+        for c in cand:
+            t_norm = norm(c.get("turma",""))
+            if t_norm not in turma_map:
+                turma_map[t_norm] = c
+            else:
+                old_status = turma_map[t_norm].get("status_saida", "")
+                new_status = c.get("status_saida", "")
+                if new_status == "" and old_status != "":
+                    turma_map[t_norm] = c
+
         turma_key = self._best_key(turma_nome, list(turma_map.keys()), cutoff=0.86)
         if not turma_key:
             poss = [c.get("turma","") for c in cand]

@@ -103,8 +103,8 @@ async def enviar_lote(request: Request, file: UploadFile = File(...)):
                            f"avaliacao='{r.avaliacao_nome}', nota='{r.nota}'")
 
                 valor_float = parse_nota(r.nota)
-                id_matricula, id_turma = resolver.resolve_matricula_e_turma(r.aluno_nome, r.turma_nome)
-                logger.debug(f"  id_matricula={id_matricula}, id_turma={id_turma}")
+                id_matricula, id_turma = resolver.resolve_matricula_e_turma(r.aluno_nome, r.turma_nome, r.status_matricula)
+                logger.debug(f"  id_matricula={id_matricula}, id_turma={id_turma}, status_desejado='{r.status_matricula}'")
 
                 disc = resolver.resolve_disciplina(id_turma, r.materia_nome)
                 id_disciplina = int(disc["id_disciplina"])
